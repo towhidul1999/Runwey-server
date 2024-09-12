@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Socket.IO Chat</title>
+</head>
+<body>
+  <h1>Socket.IO Private Chat</h1>
+
+  <div id="chat">
+    <div id="messages"></div>
+    <form id="message-form">
+      <input id="recipient" type="text" placeholder="Recipient (User ID)">
+      <input id="message" type="text" placeholder="Message">
+      <button type="submit">Send</button>
+    </form>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
+  <script>
+    const socket = io(); // Connect to the Socket.IO server
+
+    // DOM elements
+    const messages = document.getElementById('messages');
+    const messageForm = document.getElementById('message-form');
+    const recipientInput = document.getElementById('recipient');
+    const messageInput = document.getElementById('message');
+
+    // Handle incoming messages
+    socket.on('private-message', (data) => {
+      const message = document.createElement('p');
+      message.textContent = `${data.from}: ${data.text}`;
+      messages.appendChild(message);
+    });
+
+    // Handle form submission
+    messageForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const recipient = recipientInput.value;
+      const text = messageInput.value;
+      if (recipient && text) {
+        socket.emit('private-message', { to: recipient, text });
+        messageInput.value = '';
+      }
+    });
+  </script>
+</body>
+</html>
